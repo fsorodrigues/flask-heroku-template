@@ -1,3 +1,3 @@
-# Python: Getting Started
+# Flask template
 
 A Python Flask app
