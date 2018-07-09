@@ -57,9 +57,9 @@ def getCourses():
 def createCourse():
 
     # fetch message from the request
-    _course = request.json['title']
+    title = request.get_json()['title']
 
-    course = Courses(title=_course,created=datetime.now()) # prepare query statement
+    course = Courses(title=title,created=datetime.now()) # prepare query statement
 
     curr_session = mysql.session # open database session
 
@@ -81,23 +81,23 @@ def createCourse():
 @app.route('/<int:courseId>/course', methods=['PATCH'])
 def updateCourse(courseId):
 
-    _course = request.json['title']
+    title = request.get_json()['title']
 
     curr_session = mysql.session
 
     try:
-        course = Courses.query.filter_by(id=courseId).first() # fetch the entry do be updated
-        course.title = _course # update column info fetched from request
-        course.modified = datetime.now() # update modified column
+        _course = Courses.query.filter_by(id=courseId).first() # fetch the entry do be updated
+        _course.title = title # update column info fetched from request
+        _course.modified = datetime.now() # update modified column
         curr_session.commit() # commit changes
     except:
         curr_session.rollback()
         curr_session.flush()
 
-    courseId = course.id
+    # courseId = course.id
     course = Courses.query.filter_by(id=courseId).first() # fetch our updated message
 
-    result = dict(id=course.id,message=course.message,created=course.created,modified=course.modified) # prepare visual data
+    result = dict(id=course.id,title=course.title,created=course.created,modified=course.modified) # prepare visual data
 
     return jsonify(course=result)
 
